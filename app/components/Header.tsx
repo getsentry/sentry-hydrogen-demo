@@ -73,6 +73,16 @@ export function HeaderMenu({
           </NavLink>
         );
       })}
+      <NavLink
+        className="header-menu-item"
+        end
+        onClick={closeAside}
+        prefetch="intent"
+        style={activeLinkStyle}
+        to="/sentry"
+      >
+        <b>Sentry Trial Pages</b>
+      </NavLink>
     </nav>
   );
 }
