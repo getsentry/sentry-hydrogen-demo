@@ -21,6 +21,8 @@ import appStyles from './styles/app.css';
 import {Layout} from '~/components/Layout';
 import tailwindCss from './styles/tailwind.css';
 
+import * as Sentry from '@sentry/remix';
+
 // This is important to avoid re-fetching root queries on sub-navigations
 export const shouldRevalidate: ShouldRevalidateFunction = ({
   formMethod,
@@ -60,6 +62,12 @@ export function links() {
 export async function loader({context}: LoaderArgs) {
   const {storefront, session, cart} = context;
   const customerAccessToken = await session.get('customerAccessToken');
+
+  // Set customerAccessToken as a Sentry tag
+  Sentry.configureScope(scope => {
+    scope.setTag('customerAccessToken', customerAccessToken?.accessToken);
+  });
+
   const publicStoreDomain = context.env.PUBLIC_STORE_DOMAIN;
 
   // validate the customer access token is valid
@@ -99,7 +107,7 @@ export async function loader({context}: LoaderArgs) {
   );
 }
 
-export default function App() {
+function App() {
   const nonce = useNonce();
   const data = useLoaderData<typeof loader>();
 
@@ -123,12 +131,18 @@ export default function App() {
   );
 }
 
+export default Sentry.withSentry(App);
+
 export function ErrorBoundary() {
   const error = useRouteError();
   const [root] = useMatches();
   const nonce = useNonce();
   let errorMessage = 'Unknown error';
   let errorStatus = 500;
+
+  // Send the error to Sentry
+  const eventId = Sentry.captureRemixErrorBoundaryError(error);
+
 
   if (isRouteErrorResponse(error)) {
     errorMessage = error?.data?.message ?? error.data;
@@ -154,6 +168,9 @@ export function ErrorBoundary() {
               <fieldset>
                 <pre>{errorMessage}</pre>
               </fieldset>
+            )}
+            {eventId && (
+              <h2>Sentry Event ID: <code>{eventId}</code></h2>
             )}
           </div>
         </Layout>

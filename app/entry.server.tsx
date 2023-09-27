@@ -1,8 +1,27 @@
-import type {EntryContext} from '@shopify/remix-oxygen';
+import type {DataFunctionArgs, EntryContext} from '@shopify/remix-oxygen';
 import {RemixServer} from '@remix-run/react';
 import isbot from 'isbot';
 import {renderToReadableStream} from 'react-dom/server';
 import {createContentSecurityPolicy} from '@shopify/hydrogen';
+
+import * as Sentry from '@sentry/remix';
+
+Sentry.init({
+  // TODO: replace with your Sentry DSN
+  dsn: 'SENTRY_DSN',
+
+  // Set tracesSampleRate to 1.0 to capture 100%
+  // of transactions for performance monitoring.
+  // We recommend adjusting this value in production
+  tracesSampleRate: 1.0,
+});
+
+export async function handleError(
+  error: unknown,
+  {request}: DataFunctionArgs,
+): Promise<void> {
+  Sentry.captureRemixServerException(error, 'remix.server', request);
+}
 
 export default async function handleRequest(
   request: Request,
