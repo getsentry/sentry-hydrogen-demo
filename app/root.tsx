@@ -62,12 +62,6 @@ export function links() {
 export async function loader({context}: LoaderArgs) {
   const {storefront, session, cart} = context;
   const customerAccessToken = await session.get('customerAccessToken');
-
-  // Set customerAccessToken as a Sentry tag
-  Sentry.configureScope(scope => {
-    scope.setTag('customerAccessToken', customerAccessToken?.accessToken);
-  });
-
   const publicStoreDomain = context.env.PUBLIC_STORE_DOMAIN;
 
   // validate the customer access token is valid
@@ -143,7 +137,6 @@ export function ErrorBoundary() {
   // Send the error to Sentry
   const eventId = Sentry.captureRemixErrorBoundaryError(error);
 
-
   if (isRouteErrorResponse(error)) {
     errorMessage = error?.data?.message ?? error.data;
     errorStatus = error.status;
@@ -170,7 +163,9 @@ export function ErrorBoundary() {
               </fieldset>
             )}
             {eventId && (
-              <h2>Sentry Event ID: <code>{eventId}</code></h2>
+              <h2>
+                Sentry Event ID: <code>{eventId}</code>
+              </h2>
             )}
           </div>
         </Layout>

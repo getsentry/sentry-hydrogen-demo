@@ -29,6 +29,7 @@ Sentry.init({
 ```
 3. Place your Sentry Organization Slug, Project Slug, and Auth Token in `.env`
 This is required to create Sentry releases and upload source maps.
+[See docs for more information.](https://docs.sentry.io/platforms/javascript/guides/remix/sourcemaps/#2-create-a-release-and-upload-source-maps)
 
 ```bash
 # Sentry Organization Slug (e.g. "my-org")
