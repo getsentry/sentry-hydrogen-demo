@@ -18,6 +18,7 @@ Sentry.init({
     }),
     // Replay is only available in the client
     new Sentry.Replay(),
+    new Sentry.BrowserProfilingIntegration(),
   ],
 
   // Set tracesSampleRate to 1.0 to capture 100%
@@ -32,6 +33,9 @@ Sentry.init({
   // plus for 100% of sessions with an error
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
+
+  // Capture all profiles
+  profilesSampleRate: 1.0,
 });
 
 startTransition(() => {

@@ -53,6 +53,10 @@ export default async function handleRequest(
   responseHeaders.set('Content-Type', 'text/html');
   responseHeaders.set('Content-Security-Policy', header);
 
+  // Add the document policy header to enable JS profiling
+  // This is required for Sentry's profiling integration
+  responseHeaders.set('Document-Policy', 'js-profiling');
+
   return new Response(body, {
     headers: responseHeaders,
     status: responseStatusCode,
