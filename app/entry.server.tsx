@@ -29,7 +29,19 @@ export default async function handleRequest(
   responseHeaders: Headers,
   remixContext: EntryContext,
 ) {
-  const {nonce, header, NonceProvider} = createContentSecurityPolicy();
+  const {nonce, header, NonceProvider} = createContentSecurityPolicy({
+    connectSrc: [
+      "'self'",
+      '*.sentry.io',
+      // Optional for Vercel deployments
+      'vercel.live',
+    ],
+    workerSrc: [
+      "'self'",
+      // Optional for Vercel deployments
+      'blob:'
+    ],
+  });
 
   const body = await renderToReadableStream(
     <NonceProvider>
